@@ -1,18 +1,21 @@
 package s3
 
 import (
-	"io"
+	"context"
+	"fmt"
+	"mime/multipart"
+	"path"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/rs/xid"
 )
 
 // UploadFileParams single file params
 type UploadFileParams struct {
-	Body               io.Reader
-	Key                string
-	ContentType        string
+	FileHeader         *multipart.FileHeader
+	Prefix             string
 	ContentDisposition string
 }
 
@@ -23,18 +26,9 @@ type UploadMultipleFileParams struct {
 	ACL            string
 }
 
-// UploadMultipleFileResponse response
-type UploadMultipleFileResponse struct {
-	Error    map[string]error
-	Response map[string]string
-}
-
 // UploadMultipleFile upload multiple files
-func (s3 *S3) UploadMultipleFile(params UploadMultipleFileParams) (*UploadMultipleFileResponse, error) {
-	var response = &UploadMultipleFileResponse{
-		Error:    make(map[string]error),
-		Response: make(map[string]string),
-	}
+func (s3 *S3) UploadMultipleFile(ctx context.Context, params UploadMultipleFileParams) ([]string, error) {
+	var response = []string{}
 
 	session, err := s3.NewSession()
 	if err != nil {
@@ -43,11 +37,33 @@ func (s3 *S3) UploadMultipleFile(params UploadMultipleFileParams) (*UploadMultip
 
 	var wg = sync.WaitGroup{}
 	var svc = s3manager.NewUploader(session)
+	var max = len(params.UploadFiles)
+	var channel = make(chan string, max)
 
 	for _, param := range params.UploadFiles {
 		wg.Add(1)
-		go func(param *UploadFileParams, wg *sync.WaitGroup) {
-			defer wg.Done()
+		go func(channel chan string, param *UploadFileParams, wg *sync.WaitGroup) {
+			defer func() {
+				wg.Done()
+				max--
+				if max == 0 {
+					close(channel)
+				}
+
+			}()
+
+			file, err := param.FileHeader.Open()
+			if err != nil {
+				channel <- ""
+				return
+			}
+			defer file.Close()
+
+			var contentType = param.FileHeader.Header.Get("Content-Type")
+			var ext = path.Ext(param.FileHeader.Filename)
+			var key = fmt.Sprintf("%s/%s%s", param.Prefix, xid.New(), ext)
+
+			s3.logger.Printf("Uploading file %s\n", key)
 
 			var acl = "public-read"
 			var contentDisposition = "inline"
@@ -61,25 +77,41 @@ func (s3 *S3) UploadMultipleFile(params UploadMultipleFileParams) (*UploadMultip
 
 			var input = &s3manager.UploadInput{
 				Bucket:             aws.String(params.UploadToBucket),
-				Key:                aws.String(param.Key),
-				Body:               param.Body,
+				Key:                aws.String(key),
+				Body:               file,
 				ACL:                aws.String(acl),
-				ContentType:        aws.String(param.ContentType),
+				ContentType:        aws.String(contentType),
 				ContentDisposition: aws.String(contentDisposition),
 			}
 
 			result, err := svc.Upload(input)
 			if err != nil {
-
-				s3.logger.Printf("Uploaded file %s at %s\n", param.Key, result.Location)
-				response.Error[param.Key] = err
+				s3.logger.Printf("Upload file %s error: %v\n", key, err)
+				channel <- ""
 				return
 			}
 
-			response.Response[param.Key] = result.Location
+			s3.logger.Printf("Upload file %s at %s\n", key, result.Location)
 
-		}(&param, &wg)
+			channel <- result.Location
+
+		}(channel, &param, &wg)
 	}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			value, more := <-channel
+			if more {
+				if value != "" {
+					response = append(response, value)
+				}
+			} else {
+				return
+			}
+		}
+	}()
 
 	wg.Wait()
 
