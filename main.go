@@ -2,20 +2,71 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"time"
 
+	"github.com/kjk/dailyrotate"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/subosito/gotenv"
+	"github.com/thaitanloi365/gocore/logger"
 	"github.com/thaitanloi365/gocore/s3"
 	"github.com/thaitanloi365/gocore/storage"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
 	gotenv.Load("./.env")
-	testS3()
+	testLoggerWithDailyRotate()
 }
 
+func testLoggerWithDailyRotate() {
+	writer, err := dailyrotate.NewFile("logs/2006-01-02.log", func(path string, didRotate bool) {})
+	if err != nil {
+		panic(err)
+	}
+
+	var logger = logger.New(&logger.Config{
+		BufferedSize: 100,
+		Writer:       log.New(writer, "", 0),
+	})
+	var data = []interface{}{
+		"asdf", "ss", "sss",
+	}
+
+	logger.Debugf("%s\n[info] "+"asdf", append([]interface{}{"aaaaa"}, data...)...)
+	for i := 0; i < 10; i++ {
+		logger.Debugf("count %d \n", i)
+		logger.Debug("count sssss", i, "asdfasdf")
+		time.Sleep(time.Second)
+	}
+}
+
+func testLoggerWithLumberjack() {
+	var writer = &lumberjack.Logger{
+		Filename:   "foo.log",
+		MaxSize:    500, // megabytes
+		MaxBackups: 3,
+		MaxAge:     28,   //days
+		Compress:   true, // disabled by default
+	}
+
+	var logger = logger.New(&logger.Config{
+		BufferedSize: 100,
+		Writer:       log.New(writer, "\r\n", 0),
+	})
+	var data = []interface{}{
+		"asdf", "ss", "sss",
+	}
+
+	logger.Debugf("%s\n[info] "+"asdf", append([]interface{}{"aaaaa"}, data...)...)
+	for i := 0; i < 10; i++ {
+		logger.Debugf("count %d \n", i)
+		logger.Debug("count sssss", i, "asdfasdf")
+		time.Sleep(time.Second)
+	}
+}
 func testS3() {
 	var e = echo.New()
 

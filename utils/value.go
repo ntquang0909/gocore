@@ -1,11 +1,11 @@
 package utils
 
-// Float64 returns a pointer to the bool value passed in
+// Bool returns a pointer to the bool value passed in
 func Bool(v bool) *bool {
 	return &v
 }
 
-// Float64Value returns the value of the bool pointer passed in or
+// BoolValue returns the value of the bool pointer passed in or
 func BoolValue(v *bool) bool {
 	if v != nil {
 		return *v

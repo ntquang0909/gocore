@@ -85,10 +85,10 @@ func New(config *Config) *Logger {
 	}
 
 	var (
-		debugStr      = "%s DEBUG %s\n"
-		infoStr       = "%s INFO %s\n"
-		warnStr       = "%s WARN %s\n"
-		errStr        = "%s ERROR %s\n"
+		debugStr      = "%s DEBUG %s "
+		infoStr       = "%s INFO %s "
+		warnStr       = "%s WARN %s "
+		errStr        = "%s ERROR %s "
 		debugColorStr = "%s " + Green("DEBUG %s\n")
 		infoColorStr  = "%s " + Blue("INFO %s\n")
 		warnColorStr  = "%s " + Yellow("WARN %s\n")
