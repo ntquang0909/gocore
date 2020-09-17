@@ -192,6 +192,7 @@ func (l *Logger) run() {
 				var format = l.infoStr
 				var formatColor = l.infoColorStr
 				var extraFormat = data.format
+				var extraPrettyFormat = data.format
 				switch data.logLevel {
 				case Debug:
 					format = l.debugStr
@@ -210,9 +211,14 @@ func (l *Logger) run() {
 					separator = "\n"
 				}
 
+				if extraPrettyFormat == "" {
+					for i := 0; i < len(data.values); i++ {
+						extraPrettyFormat = "%v" + separator + extraPrettyFormat
+					}
+				}
 				if extraFormat == "" {
 					for i := 0; i < len(data.values); i++ {
-						extraFormat = "%v" + separator + extraFormat
+						extraFormat = "%v" + " " + extraFormat
 					}
 				}
 
@@ -224,10 +230,10 @@ func (l *Logger) run() {
 						values = append(values, ToJSONString(value))
 						prettyValues = append(prettyValues, ToPrettyJSONString(value))
 					}
-					l.writer.Printf(formatColor+extraFormat, append([]interface{}{data.time, data.caller}, prettyValues...)...)
+					l.writer.Printf(formatColor+extraPrettyFormat, append([]interface{}{data.time, data.caller}, prettyValues...)...)
 					l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, values...)...)
 				default:
-					l.writer.Printf(formatColor+extraFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
+					l.writer.Printf(formatColor+extraPrettyFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
 					l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
 				}
 
