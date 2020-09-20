@@ -45,7 +45,8 @@ type Config struct {
 	DateFormat   string
 	Prefix       string
 
-	Writer Writer
+	Writer                Writer
+	WriteFileExceptLevels []LogLevel
 }
 
 // New new writter
@@ -131,7 +132,7 @@ func (l *Logger) Debugf(format string, values ...interface{}) {
 
 // DebugJSON print pretty json
 func (l *Logger) DebugJSON(values ...interface{}) {
-	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeJSON, "", values...)
+	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeJSON, "", values...)
 }
 
 // Info info
@@ -231,10 +232,15 @@ func (l *Logger) run() {
 						prettyValues = append(prettyValues, ToPrettyJSONString(value))
 					}
 					l.writer.Printf(formatColor+extraPrettyFormat, append([]interface{}{data.time, data.caller}, prettyValues...)...)
-					l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, values...)...)
+					if l.ignoreWriteFile(data.logLevel) == false {
+						l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, values...)...)
+					}
 				default:
 					l.writer.Printf(formatColor+extraPrettyFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
-					l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
+					if l.ignoreWriteFile(data.logLevel) == false {
+						l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
+					}
+
 				}
 
 				break
@@ -278,4 +284,15 @@ func (l *Logger) fileWithLineNum() string {
 		}
 	}
 	return ""
+}
+
+func (l *Logger) ignoreWriteFile(level LogLevel) bool {
+	for _, lv := range l.config.WriteFileExceptLevels {
+		if lv == level {
+			return true
+		}
+	}
+
+	return false
+
 }
