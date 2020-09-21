@@ -50,6 +50,7 @@ func New(config *Config) *Client {
 	})
 
 	var instance = &Client{
+		config:    config,
 		namespace: "gocore_redis_cache",
 		rdb:       rdb,
 		logger:    log.New(os.Stdout, "\r\n", 0),
@@ -126,6 +127,7 @@ func (client *Client) Set(key string, value interface{}, expiration time.Duratio
 
 // SetWithDefault set key with default  expiration
 func (client *Client) SetWithDefault(key string, value interface{}) error {
+
 	return client.SetWithContextDefault(context.Background(), key, value)
 }
 

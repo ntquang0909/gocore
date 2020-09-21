@@ -39,7 +39,7 @@ func testLoggerWithDailyRotate() {
 	for i := 0; i < 10; i++ {
 		logger.Debugf("count %d \n", i)
 		logger.Debug("count sssss", i, "asdfasdf")
-		logger.DebugJSON(data, data)
+		logger.DebugJSON("asdfasdfadsf", data, data)
 		time.Sleep(time.Second)
 	}
 }

@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -45,6 +46,8 @@ func TestRedisCache(t *testing.T) {
 
 	for i := 0; i < 5; i++ {
 		redisCache.Set(fmt.Sprintf("test_%d", i), &author, time.Hour)
+		redisCache.SetWithDefault(fmt.Sprintf("test_%d", i), &author)
+		redisCache.SetWithContextDefault(context.Background(), fmt.Sprintf("test_%d", i), &author)
 	}
 
 	for i := 0; i < 5; i++ {
