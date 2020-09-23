@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 // Logger instance
@@ -19,7 +21,7 @@ type Logger struct {
 
 	mutex sync.RWMutex
 
-	queue chan logTask
+	queue chan *logTask
 
 	writer     Writer
 	fileWriter Writer
@@ -104,7 +106,7 @@ func New(config *Config) *Logger {
 		mutex:         sync.RWMutex{},
 		context:       ctx,
 		cancelFunc:    cancelFunc,
-		queue:         make(chan logTask, defaultConfig.BufferedSize),
+		queue:         make(chan *logTask, defaultConfig.BufferedSize),
 		debugStr:      debugStr,
 		debugColorStr: debugColorStr,
 		infoStr:       infoStr,
@@ -125,9 +127,19 @@ func (l *Logger) Debug(values ...interface{}) {
 	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeInterface, "", values...)
 }
 
+// DebugWithEchoContext wrap http
+func (l *Logger) DebugWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeInterface, "", values...).withEchoContext(c)
+}
+
 // Debugf debug with format
 func (l *Logger) Debugf(format string, values ...interface{}) {
 	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeInterface, format, values...)
+}
+
+// DebugfWithEchoContext debug with format
+func (l *Logger) DebugfWithEchoContext(c echo.Context, format string, values ...interface{}) {
+	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeInterface, format, values...).withEchoContext(c)
 }
 
 // DebugJSON print pretty json
@@ -135,9 +147,19 @@ func (l *Logger) DebugJSON(values ...interface{}) {
 	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeJSON, "", values...)
 }
 
+// DebugJSONWithEchoContext print pretty json
+func (l *Logger) DebugJSONWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeJSON, "", values...).withEchoContext(c)
+}
+
 // Info info
 func (l *Logger) Info(values ...interface{}) {
 	l.queue <- l.buildlog(Info, l.fileWithLineNum(), valueTypeInterface, "", values...)
+}
+
+// InfofWithEchoContext info with format
+func (l *Logger) InfofWithEchoContext(c echo.Context, format string, values ...interface{}) {
+	l.queue <- l.buildlog(Info, l.fileWithLineNum(), valueTypeInterface, format, values...).withEchoContext(c)
 }
 
 // Infof info with format
@@ -145,9 +167,19 @@ func (l *Logger) Infof(format string, values ...interface{}) {
 	l.queue <- l.buildlog(Info, l.fileWithLineNum(), valueTypeInterface, format, values...)
 }
 
+// InfoWithEchoContext info with format
+func (l *Logger) InfoWithEchoContext(c echo.Context, format string, values ...interface{}) {
+	l.queue <- l.buildlog(Info, l.fileWithLineNum(), valueTypeInterface, format, values...).withEchoContext(c)
+}
+
 // InfoJSON print pretty json
 func (l *Logger) InfoJSON(values ...interface{}) {
 	l.queue <- l.buildlog(Info, l.fileWithLineNum(), valueTypeJSON, "", values...)
+}
+
+// InfoJSONWithEchoContext print pretty json
+func (l *Logger) InfoJSONWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Info, l.fileWithLineNum(), valueTypeJSON, "", values...).withEchoContext(c)
 }
 
 // Warn warn
@@ -155,9 +187,19 @@ func (l *Logger) Warn(values ...interface{}) {
 	l.queue <- l.buildlog(Warn, l.fileWithLineNum(), valueTypeInterface, "", values...)
 }
 
+// Warn warn
+func (l *Logger) WarnWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Warn, l.fileWithLineNum(), valueTypeInterface, "", values...).withEchoContext(c)
+}
+
 // Warnf info with format
 func (l *Logger) Warnf(format string, values ...interface{}) {
 	l.queue <- l.buildlog(Warn, l.fileWithLineNum(), valueTypeInterface, format, values...)
+}
+
+// WarnfWithEchoContext info with format
+func (l *Logger) WarnfWithEchoContext(c echo.Context, format string, values ...interface{}) {
+	l.queue <- l.buildlog(Warn, l.fileWithLineNum(), valueTypeInterface, format, values...).withEchoContext(c)
 }
 
 // WarnJSON print pretty json
@@ -165,9 +207,19 @@ func (l *Logger) WarnJSON(values ...interface{}) {
 	l.queue <- l.buildlog(Warn, l.fileWithLineNum(), valueTypeJSON, "", values...)
 }
 
+// WarnJSONWithEchoContext print pretty json
+func (l *Logger) WarnJSONWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Warn, l.fileWithLineNum(), valueTypeJSON, "", values...).withEchoContext(c)
+}
+
 // Error error
 func (l *Logger) Error(values ...interface{}) {
 	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeInterface, "", values...)
+}
+
+// Error error
+func (l *Logger) ErrorWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeInterface, "", values...).withEchoContext(c)
 }
 
 // Errorf error with format
@@ -175,15 +227,25 @@ func (l *Logger) Errorf(format string, values ...interface{}) {
 	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeInterface, format, values...)
 }
 
+// ErrorfWithEchoContext error with format
+func (l *Logger) ErrorfWithEchoContext(c echo.Context, format string, values ...interface{}) {
+	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeInterface, format, values...).withEchoContext(c)
+}
+
 // ErrorJSON print pretty json
 func (l *Logger) ErrorJSON(values ...interface{}) {
 	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeJSON, "", values...)
 }
 
+// ErrorJSONWithEchoContext print pretty json
+func (l *Logger) ErrorJSONWithEchoContext(c echo.Context, values ...interface{}) {
+	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeJSON, "", values...).withEchoContext(c)
+}
+
 func (l *Logger) run() {
 	go l.cleanup()
 
-	go func(ctx context.Context, queue chan logTask) {
+	go func(ctx context.Context, queue chan *logTask) {
 		for {
 			select {
 			case <-ctx.Done():
@@ -223,6 +285,14 @@ func (l *Logger) run() {
 					}
 				}
 
+				formatColor = formatColor + extraPrettyFormat
+				format = format + extraFormat
+
+				if data.requestInfo != nil {
+					formatColor = data.formatRequestInfo() + "\n" + formatColor
+					format = data.formatRequestInfo() + " " + format
+				}
+
 				switch data.valueType {
 				case valueTypeJSON:
 					var prettyValues = []interface{}{}
@@ -231,14 +301,15 @@ func (l *Logger) run() {
 						values = append(values, ToJSONString(value))
 						prettyValues = append(prettyValues, ToPrettyJSONString(value))
 					}
-					l.writer.Printf(formatColor+extraPrettyFormat, append([]interface{}{data.time, data.caller}, prettyValues...)...)
+					l.writer.Printf(formatColor, append([]interface{}{data.time, data.caller}, prettyValues...)...)
 					if l.ignoreWriteFile(data.logLevel) == false {
-						l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, values...)...)
+						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, values...)...)
 					}
 				default:
-					l.writer.Printf(formatColor+extraPrettyFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
+					l.writer.Printf(formatColor, append([]interface{}{data.time, data.caller}, data.values...)...)
 					if l.ignoreWriteFile(data.logLevel) == false {
-						l.fileWriter.Printf(format+extraFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
+						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, data.values...)...)
+
 					}
 
 				}
@@ -261,8 +332,8 @@ func (l *Logger) cleanup() {
 
 }
 
-func (l *Logger) buildlog(logtype LogLevel, caller string, valueType valueType, format string, values ...interface{}) (newlog logTask) {
-	newlog = logTask{
+func (l *Logger) buildlog(logtype LogLevel, caller string, valueType valueType, format string, values ...interface{}) (newlog *logTask) {
+	newlog = &logTask{
 		logger:    l,
 		logLevel:  logtype,
 		time:      time.Now().Format(l.config.DateFormat),

@@ -9,6 +9,7 @@ import (
 	"github.com/kjk/dailyrotate"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/xid"
 	"github.com/subosito/gotenv"
 	"github.com/thaitanloi365/gocore/logger"
 	"github.com/thaitanloi365/gocore/s3"
@@ -18,7 +19,7 @@ import (
 
 func main() {
 	gotenv.Load("./.env")
-	testLoggerWithDailyRotate()
+	testLogWithHTTP()
 }
 
 func testLoggerWithDailyRotate() {
@@ -143,6 +144,39 @@ func testStorage() {
 			}
 		}
 	}()
+
+	e.Start(":1234")
+}
+
+func testLogWithHTTP() {
+
+	writer, err := dailyrotate.NewFile("logs/2006-01-02.log", func(path string, didRotate bool) {})
+	if err != nil {
+		panic(err)
+	}
+
+	var log = logger.New(&logger.Config{
+		BufferedSize: 100,
+		Writer:       log.New(writer, "", 0),
+	})
+
+	var e = echo.New()
+	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
+		Generator: xid.New().String,
+	}))
+	e.GET("/success", func(c echo.Context) error {
+		fmt.Println(c.Request().Header)
+		c.Set(logger.RefErrorIDKey, "aaaaa")
+		c.Set(logger.UserIDKey, "1111")
+		defer log.DebugJSONWithEchoContext(c, "Guess")
+		return c.JSON(200, "Success")
+	})
+
+	e.GET("/error", func(c echo.Context) error {
+		log.ErrorJSONWithEchoContext(c, "Guess")
+		return echo.NewHTTPError(500, "test")
+		return c.JSON(500, "Success")
+	})
 
 	e.Start(":1234")
 }
