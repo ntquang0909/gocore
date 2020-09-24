@@ -19,7 +19,8 @@ import (
 
 func main() {
 	gotenv.Load("./.env")
-	testLogWithHTTP()
+	// testLogWithHTTP()
+	testS3()
 }
 
 func testLoggerWithDailyRotate() {
@@ -84,7 +85,9 @@ func testS3() {
 			UploadToBucket: os.Getenv("AWS_S3_ORIGIN_BUCKET"),
 			UploadFiles:    []s3.UploadFileParams{},
 		}
+		fmt.Println(files)
 		for _, file := range files {
+			fmt.Println("file", file.Filename)
 			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileParams{
 				FileHeader: file,
 				Prefix:     "test",

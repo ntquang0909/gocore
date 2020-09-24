@@ -39,10 +39,9 @@ func (s3 *S3) UploadMultipleFile(ctx context.Context, params UploadMultipleFileP
 	var svc = s3manager.NewUploader(session)
 	var max = len(params.UploadFiles)
 	var channel = make(chan string, max)
-
-	for _, param := range params.UploadFiles {
-		wg.Add(1)
-		go func(channel chan string, param *UploadFileParams, wg *sync.WaitGroup) {
+	wg.Add(max)
+	for _, p := range params.UploadFiles {
+		go func(channel chan string, param UploadFileParams, wg *sync.WaitGroup) {
 			defer func() {
 				wg.Done()
 				max--
@@ -95,7 +94,7 @@ func (s3 *S3) UploadMultipleFile(ctx context.Context, params UploadMultipleFileP
 
 			channel <- result.Location
 
-		}(channel, &param, &wg)
+		}(channel, p, &wg)
 	}
 
 	wg.Add(1)
