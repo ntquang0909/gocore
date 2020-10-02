@@ -1,7 +1,6 @@
 package sendgrid
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -84,13 +83,13 @@ func (mailer *Mailer) SendMail(params SendMailParams) error {
 	var userName = params.Name
 	var userEmail = params.Email
 
-	var isDRMACMail = strings.Contains(userEmail, "@aol.com") || strings.Contains(userEmail, "@yahoo.com")
-	if isDRMACMail {
-		var index = strings.Index(userEmail, "@")
-		if index != -1 {
-			addressAlias = fmt.Sprintf("no-reply%s", userEmail[index:])
-		}
-	}
+	// var isDRMACMail = strings.Contains(userEmail, "@aol.com") || strings.Contains(userEmail, "@yahoo.com")
+	// if isDRMACMail {
+	// 	var index = strings.Index(userEmail, "@")
+	// 	if index != -1 {
+	// 		addressAlias = fmt.Sprintf("no-reply%s", userEmail[index:])
+	// 	}
+	// }
 
 	var m = mail.NewV3Mail()
 	var e = mail.NewEmail(nameAlias, addressAlias)
