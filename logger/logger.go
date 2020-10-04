@@ -52,6 +52,8 @@ type Config struct {
 
 	Writer                Writer
 	WriteFileExceptLevels []LogLevel
+
+	Notifier *notifier.SlackNotifier
 }
 
 // New new writter
@@ -118,6 +120,7 @@ func New(config *Config) *Logger {
 		warnColorStr:  warnColorStr,
 		errStr:        errStr,
 		errColorStr:   errColorStr,
+		notifier:      config.Notifier,
 	}
 
 	logger.run()
