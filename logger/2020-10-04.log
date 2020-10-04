@@ -1,0 +1,126 @@
+
+2020-10-04 17:25:15 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:31 aaaaa
+[info] asdf%!(EXTRA string=asdf, string=ss, string=sss)
+
+2020-10-04 17:25:15 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 0 
+
+2020-10-04 17:25:15 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 0 asdfasdf 
+
+2020-10-04 17:25:16 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 1 
+
+2020-10-04 17:25:16 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 1 asdfasdf 
+
+2020-10-04 17:25:17 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 2 
+
+2020-10-04 17:25:17 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 2 asdfasdf 
+
+2020-10-04 17:25:18 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 3 
+
+2020-10-04 17:25:18 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 3 asdfasdf 
+
+2020-10-04 17:25:19 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 4 
+
+2020-10-04 17:25:19 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 4 asdfasdf 
+
+2020-10-04 17:25:20 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 5 
+
+2020-10-04 17:25:20 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 5 asdfasdf 
+
+2020-10-04 17:25:21 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 6 
+
+2020-10-04 17:25:21 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 6 asdfasdf 
+
+2020-10-04 17:25:22 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 7 
+
+2020-10-04 17:25:22 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 7 asdfasdf 
+
+2020-10-04 17:25:23 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 8 
+
+2020-10-04 17:25:23 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 8 asdfasdf 
+
+2020-10-04 17:25:24 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 9 
+
+2020-10-04 17:25:24 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 9 asdfasdf 
+
+2020-10-04 17:26:54 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:31 aaaaa
+[info] asdf%!(EXTRA string=asdf, string=ss, string=sss)
+
+2020-10-04 17:26:54 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 0 
+
+2020-10-04 17:26:54 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 0 asdfasdf 
+
+2020-10-04 17:26:55 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 1 
+
+2020-10-04 17:26:55 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 1 asdfasdf 
+
+2020-10-04 17:26:56 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 2 
+
+2020-10-04 17:26:56 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 2 asdfasdf 
+
+2020-10-04 17:26:57 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 3 
+
+2020-10-04 17:26:57 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 3 asdfasdf 
+
+2020-10-04 17:26:58 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 4 
+
+2020-10-04 17:26:58 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 4 asdfasdf 
+
+2020-10-04 17:26:59 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 5 
+
+2020-10-04 17:26:59 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 5 asdfasdf 
+
+2020-10-04 17:27:00 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 6 
+
+2020-10-04 17:27:00 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 6 asdfasdf 
+
+2020-10-04 17:27:01 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 7 
+
+2020-10-04 17:27:01 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 7 asdfasdf 
+
+2020-10-04 17:27:02 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 8 
+
+2020-10-04 17:27:02 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 8 asdfasdf 
+
+2020-10-04 17:27:03 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 count 9 
+
+2020-10-04 17:27:03 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 count sssss 9 asdfasdf 
+
+2020-10-04 17:40:16 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:31 %!(EXTRA string=aaaaa, string=asdf, string=ss, string=sss)
+
+2020-10-04 17:40:16 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=0)
+
+2020-10-04 17:40:16 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=0, string=asdfasdf)
+
+2020-10-04 17:40:17 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=1)
+
+2020-10-04 17:40:17 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=1, string=asdfasdf)
+
+2020-10-04 17:40:18 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=2)
+
+2020-10-04 17:40:18 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=2, string=asdfasdf)
+
+2020-10-04 17:40:19 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=3)
+
+2020-10-04 17:40:19 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=3, string=asdfasdf)
+
+2020-10-04 17:40:20 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=4)
+
+2020-10-04 17:40:20 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=4, string=asdfasdf)
+
+2020-10-04 17:40:21 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=5)
+
+2020-10-04 17:40:21 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=5, string=asdfasdf)
+
+2020-10-04 17:40:22 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=6)
+
+2020-10-04 17:40:22 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=6, string=asdfasdf)
+
+2020-10-04 17:40:23 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=7)
+
+2020-10-04 17:40:23 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=7, string=asdfasdf)
+
+2020-10-04 17:40:24 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=8)
+
+2020-10-04 17:40:24 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:34 %!(EXTRA string=count sssss, int=8, string=asdfasdf)
+
+2020-10-04 17:40:25 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:33 %!(EXTRA int=9)

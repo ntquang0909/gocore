@@ -12,6 +12,7 @@ import (
 	"github.com/rs/xid"
 	"github.com/subosito/gotenv"
 	"github.com/thaitanloi365/gocore/logger"
+	notifier "github.com/thaitanloi365/gocore/logger/notifer"
 	"github.com/thaitanloi365/gocore/s3"
 	"github.com/thaitanloi365/gocore/storage"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -19,8 +20,8 @@ import (
 
 func main() {
 	gotenv.Load("./.env")
-	// testLogWithHTTP()
-	testS3()
+	testLogWithHTTP()
+	// testS3()
 }
 
 func testLoggerWithDailyRotate() {
@@ -161,6 +162,10 @@ func testLogWithHTTP() {
 	var log = logger.New(&logger.Config{
 		BufferedSize: 100,
 		Writer:       log.New(writer, "", 0),
+		Notifier: &notifier.SlackNotifier{
+			WebhookURL: "https://hooks.slack.com/services/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",
+			Channel:    "#legend-trucking-staging-bot",
+		},
 	})
 
 	var e = echo.New()
@@ -171,6 +176,11 @@ func testLogWithHTTP() {
 		fmt.Println(c.Request().Header)
 		c.Set(logger.RefErrorIDKey, "aaaaa")
 		c.Set(logger.UserIDKey, "1111")
+		var user = map[string]interface{}{
+			"name": "Test",
+		}
+		log.DebugJSON(user)
+		log.DebugJSONWithEchoContext(c, user)
 		defer log.DebugJSONWithEchoContext(c, "Guess")
 		return c.JSON(200, "Success")
 	})

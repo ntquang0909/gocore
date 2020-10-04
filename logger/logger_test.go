@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kjk/dailyrotate"
+	notifier "github.com/thaitanloi365/gocore/logger/notifer"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -18,6 +19,10 @@ func TestRotateLogger(t *testing.T) {
 	var logger = New(&Config{
 		BufferedSize: 100,
 		Writer:       log.New(rotateLog, "\r\n", 0),
+		Notifier: &notifier.SlackNotifier{
+			WebhookURL: "https://hooks.slack.com/services/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",
+			Channel:    "#legend-trucking-staging-bot",
+		},
 	})
 	var data = []interface{}{
 		"asdf", "ss", "sss",
@@ -27,6 +32,7 @@ func TestRotateLogger(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		logger.Debugf("count %d \n", i)
 		logger.Debug("count sssss", i, "asdfasdf")
+		logger.DebugJSON("count sssss", i, "asdfasdf")
 		time.Sleep(time.Second)
 	}
 }

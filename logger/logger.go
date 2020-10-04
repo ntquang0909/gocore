@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -291,12 +292,12 @@ func (l *Logger) run() {
 					}
 				}
 
-				formatColor = formatColor + extraPrettyFormat
-				format = format + extraFormat
+				var fullFormatColor = formatColor + extraPrettyFormat
+				var fullFormat = format + extraFormat
 
 				if data.requestInfo != nil {
-					formatColor = data.formatRequestInfo() + "\n" + formatColor
-					format = data.formatRequestInfo() + " " + format
+					fullFormatColor = data.formatRequestInfo() + "\n" + fullFormatColor
+					fullFormat = data.formatRequestInfo() + " " + fullFormat
 				}
 
 				switch data.valueType {
@@ -307,13 +308,18 @@ func (l *Logger) run() {
 						values = append(values, ToJSONString(value))
 						prettyValues = append(prettyValues, ToPrettyJSONString(value))
 					}
-					l.writer.Printf(formatColor, append([]interface{}{data.time, data.caller}, prettyValues...)...)
+					l.writer.Printf(fullFormatColor, append([]interface{}{data.time, data.caller}, prettyValues...)...)
 					if l.ignoreWriteFile(data.logLevel) == false {
 
-						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, values...)...)
+						l.fileWriter.Printf(fullFormat, append([]interface{}{data.time, data.caller}, values...)...)
 
 						if l.notifier != nil {
-							l.notifier.Send(format, append([]interface{}{data.time, data.caller}, values...)...)
+							var titleFormat = format
+							if data.requestInfo != nil {
+								titleFormat = data.formatRequestInfo() + "\n" + titleFormat
+							}
+
+							l.notifier.Send(fmt.Sprintf(titleFormat, data.time, data.caller), fmt.Sprintf(extraFormat, prettyValues...))
 						}
 					}
 				default:
@@ -321,7 +327,12 @@ func (l *Logger) run() {
 					if l.ignoreWriteFile(data.logLevel) == false {
 						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, data.values...)...)
 						if l.notifier != nil {
-							l.notifier.Send(format, append([]interface{}{data.time, data.caller}, data.values...)...)
+							var titleFormat = format
+							if data.requestInfo != nil {
+								titleFormat = data.formatRequestInfo() + "\n" + titleFormat
+							}
+
+							l.notifier.Send(fmt.Sprintf(titleFormat, data.time, data.caller), fmt.Sprintf(extraFormat, data.values...))
 						}
 					}
 
