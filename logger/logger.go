@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	notifier "github.com/thaitanloi365/gocore/logger/notifer"
 )
 
 // Logger instance
@@ -37,6 +38,8 @@ type Logger struct {
 
 	errStr      string
 	errColorStr string
+
+	notifier *notifier.SlackNotifier
 }
 
 // Config log config
@@ -303,13 +306,20 @@ func (l *Logger) run() {
 					}
 					l.writer.Printf(formatColor, append([]interface{}{data.time, data.caller}, prettyValues...)...)
 					if l.ignoreWriteFile(data.logLevel) == false {
+
 						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, values...)...)
+
+						if l.notifier != nil {
+							l.notifier.Send(format, append([]interface{}{data.time, data.caller}, values...)...)
+						}
 					}
 				default:
 					l.writer.Printf(formatColor, append([]interface{}{data.time, data.caller}, data.values...)...)
 					if l.ignoreWriteFile(data.logLevel) == false {
 						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, data.values...)...)
-
+						if l.notifier != nil {
+							l.notifier.Send(format, append([]interface{}{data.time, data.caller}, data.values...)...)
+						}
 					}
 
 				}

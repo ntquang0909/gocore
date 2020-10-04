@@ -178,7 +178,6 @@ func testLogWithHTTP() {
 	e.GET("/error", func(c echo.Context) error {
 		log.ErrorJSONWithEchoContext(c, "Guess")
 		return echo.NewHTTPError(500, "test")
-		return c.JSON(500, "Success")
 	})
 
 	e.Start(":1234")
