@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/kjk/dailyrotate"
-	notifier "github.com/thaitanloi365/gocore/logger/notifer"
+	"github.com/thaitanloi365/gocore/logger/notifier"
+
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 

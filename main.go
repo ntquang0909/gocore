@@ -12,7 +12,7 @@ import (
 	"github.com/rs/xid"
 	"github.com/subosito/gotenv"
 	"github.com/thaitanloi365/gocore/logger"
-	notifier "github.com/thaitanloi365/gocore/logger/notifer"
+	"github.com/thaitanloi365/gocore/logger/notifier"
 	"github.com/thaitanloi365/gocore/s3"
 	"github.com/thaitanloi365/gocore/storage"
 	"gopkg.in/natefinch/lumberjack.v2"

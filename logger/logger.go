@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	notifier "github.com/thaitanloi365/gocore/logger/notifer"
+	"github.com/thaitanloi365/gocore/logger/notifier"
 )
 
 // Logger instance
