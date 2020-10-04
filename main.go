@@ -163,8 +163,8 @@ func testLogWithHTTP() {
 		BufferedSize: 100,
 		Writer:       log.New(writer, "", 0),
 		Notifier: &notifier.SlackNotifier{
-			WebhookURL: "https://hooks.slack.com/services/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",
-			Channel:    "#legend-trucking-staging-bot",
+			WebhookURL: "",
+			Channel:    "",
 		},
 	})
 
