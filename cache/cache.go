@@ -7,6 +7,9 @@ import (
 	"github.com/thaitanloi365/gocore/cache/types"
 )
 
+// NoExpiration no expiration
+const NoExpiration time.Duration = -1
+
 // Cache cache
 type Cache interface {
 	Type() string

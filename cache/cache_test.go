@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/thaitanloi365/gocore/cache/memory"
 	"github.com/thaitanloi365/gocore/cache/redis"
@@ -45,7 +46,7 @@ func TestRedisCache(t *testing.T) {
 	assert.NoError(t, err)
 
 	for i := 0; i < 5; i++ {
-		redisCache.Set(fmt.Sprintf("test_%d", i), &author, time.Hour)
+		redisCache.Set(fmt.Sprintf("test_%d", i), &author, cache.NoExpiration)
 		redisCache.SetWithDefault(fmt.Sprintf("test_%d", i), &author)
 		redisCache.SetWithContextDefault(context.Background(), fmt.Sprintf("test_%d", i), &author)
 	}
