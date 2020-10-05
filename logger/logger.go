@@ -121,7 +121,7 @@ func New(config *Config) *Logger {
 		warnColorStr:  warnColorStr,
 		errStr:        errStr,
 		errColorStr:   errColorStr,
-		notifier:      config.Notifier,
+		notifier:      defaultConfig.Notifier,
 	}
 
 	logger.run()
@@ -323,9 +323,9 @@ func (l *Logger) run() {
 						}
 					}
 				default:
-					l.writer.Printf(formatColor, append([]interface{}{data.time, data.caller}, data.values...)...)
+					l.writer.Printf(fullFormatColor, append([]interface{}{data.time, data.caller}, data.values...)...)
 					if l.ignoreWriteFile(data.logLevel) == false {
-						l.fileWriter.Printf(format, append([]interface{}{data.time, data.caller}, data.values...)...)
+						l.fileWriter.Printf(fullFormat, append([]interface{}{data.time, data.caller}, data.values...)...)
 						if l.notifier != nil {
 							var titleFormat = format
 							if data.requestInfo != nil {

@@ -181,6 +181,8 @@ func testLogWithHTTP() {
 		}
 		log.DebugJSON(user)
 		log.DebugJSONWithEchoContext(c, user)
+		log.DebugfWithEchoContext(c, "Dispatch task id = %s name = %s success\n", "result.Signature.UUID", "result.Signature.Name")
+		log.Debugf("Dispatch task id = %s name = %s success\n", "result.Signature.UUID", "result.Signature.Name")
 		defer log.DebugJSONWithEchoContext(c, "Guess")
 		return c.JSON(200, "Success")
 	})
