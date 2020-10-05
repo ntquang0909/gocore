@@ -76,6 +76,18 @@ func (client *Client) Logger() types.Logger {
 	return client.logger
 }
 
+// GetAllItemsWithContext get key
+func (client *Client) GetAllItemsWithContext(ctx context.Context) (list []types.Item) {
+	for key, value := range client.cache.Items() {
+		var item = types.Item{
+			Key:   key,
+			Value: value.Object,
+		}
+		list = append(list, item)
+	}
+	return
+}
+
 // Get get key
 func (client *Client) Get(key string, value interface{}) error {
 	return client.GetWithContext(context.Background(), key, value)

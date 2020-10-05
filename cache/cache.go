@@ -18,6 +18,7 @@ type Cache interface {
 	SetWithDefault(key string, value interface{}) error
 	Delete(keys ...string) error
 	Clear()
+	GetAllItemsWithContext(ctx context.Context) []types.Item
 	GetWithContext(ctx context.Context, key string, src interface{}) error
 	SetWithContext(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	SetWithContextDefault(ctx context.Context, key string, value interface{}) error

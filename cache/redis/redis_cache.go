@@ -99,6 +99,25 @@ func (client *Client) Get(key string, value interface{}) error {
 	return client.GetWithContext(context.Background(), key, value)
 }
 
+// GetAllItemsWithContext get key
+func (client *Client) GetAllItemsWithContext(ctx context.Context) (list []types.Item) {
+	var iter = client.rdb.Scan(ctx, 0, fmt.Sprintf("%s*", client.namespace), 0).Iterator()
+	for iter.Next(ctx) {
+		var key = iter.Val()
+		val, err := client.rdb.Get(ctx, key).Result()
+		if err == nil {
+			var item = types.Item{
+				Key:   key,
+				Value: val,
+			}
+			list = append(list, item)
+
+		}
+	}
+
+	return
+}
+
 // GetWithContext get key
 func (client *Client) GetWithContext(ctx context.Context, key string, value interface{}) error {
 	var k = client.getKey(key)

@@ -51,6 +51,11 @@ func TestRedisCache(t *testing.T) {
 		redisCache.SetWithContextDefault(context.Background(), fmt.Sprintf("test_%d", i), &author)
 	}
 
+	var list = redisCache.GetAllItemsWithContext(context.Background())
+	for _, item := range list {
+		fmt.Println("list", item)
+
+	}
 	for i := 0; i < 5; i++ {
 		var key = fmt.Sprintf("test_%d", i)
 		var result Author
@@ -110,6 +115,12 @@ func TestMemCache(t *testing.T) {
 
 	for i := 0; i < 5; i++ {
 		memCache.Set(fmt.Sprintf("test_%d", i), &author, time.Hour)
+	}
+
+	var list = memCache.GetAllItemsWithContext(context.Background())
+	for _, item := range list {
+		fmt.Println("list", item)
+
 	}
 
 	for i := 0; i < 5; i++ {
