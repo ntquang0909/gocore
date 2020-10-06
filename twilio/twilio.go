@@ -43,6 +43,7 @@ func (client *Twilio) SendSMS(to string, message string, mediaURLs ...url.URL) e
 				Detail:     v.Detail,
 				Message:    v.Title,
 				StatusCode: v.Status,
+				Type:       v.Type,
 			}
 		}
 

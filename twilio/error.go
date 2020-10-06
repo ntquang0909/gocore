@@ -7,6 +7,7 @@ type Error struct {
 	StatusCode int
 	Message    string
 	Detail     string
+	Type       string
 }
 
 func (e *Error) Error() string {
