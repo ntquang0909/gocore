@@ -76,14 +76,48 @@ func (client *Client) Logger() types.Logger {
 	return client.logger
 }
 
-// GetAllItemsWithContext get key
-func (client *Client) GetAllItemsWithContext(ctx context.Context) (list []types.Item) {
+// GetAllKeysWithContext get all items
+func (client *Client) GetAllKeysWithContext(ctx context.Context, prefix ...string) []string {
+	var ns = ""
+	if len(prefix) > 0 {
+		ns = prefix[0]
+	}
+
+	var keys = []string{}
+	for key := range client.cache.Items() {
+		if strings.HasPrefix(key, client.Key(ns)) {
+			keys = append(keys, key)
+		}
+	}
+
+	return keys
+}
+
+// GetAllKeys get all key
+func (client *Client) GetAllKeys(prefix ...string) []string {
+	return client.GetAllKeysWithContext(context.Background(), prefix...)
+}
+
+// GetAllItems get all items
+func (client *Client) GetAllItems(prefix ...string) (list []types.Item) {
+	return client.GetAllItemsWithContext(context.Background(), prefix...)
+}
+
+// GetAllItemsWithContext get all items
+func (client *Client) GetAllItemsWithContext(ctx context.Context, prefix ...string) (list []types.Item) {
+	var ns = ""
+	if len(prefix) > 0 {
+		ns = prefix[0]
+	}
 	for key, value := range client.cache.Items() {
 		var item = types.Item{
 			Key:   key,
 			Value: value.Object,
 		}
-		list = append(list, item)
+
+		if strings.HasPrefix(key, client.Key(ns)) {
+			list = append(list, item)
+		}
 	}
 	return
 }
@@ -95,7 +129,7 @@ func (client *Client) Get(key string, value interface{}) error {
 
 // GetWithContext get key
 func (client *Client) GetWithContext(ctx context.Context, key string, value interface{}) error {
-	var k = client.getKey(key)
+	var k = client.Key(key)
 	v, found := client.cache.Get(k)
 	if !found {
 		client.logger.Printf("Key = %s is not found\n", k)
@@ -121,7 +155,7 @@ func (client *Client) SetWithDefault(key string, value interface{}) error {
 
 // SetWithContext set key with context
 func (client *Client) SetWithContext(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	var k = client.getKey(key)
+	var k = client.Key(key)
 	client.cache.Set(k, value, expiration)
 	return nil
 }
@@ -139,21 +173,26 @@ func (client *Client) Delete(keys ...string) error {
 // DeleteWithContext delete by key with context
 func (client *Client) DeleteWithContext(ctx context.Context, keys ...string) error {
 	for _, key := range keys {
-		client.cache.Delete(client.getKey(key))
+		client.cache.Delete(client.Key(key))
 	}
 	return nil
 }
 
 // Clear clear all records
-func (client *Client) Clear() {
-	client.ClearWithContext(context.Background())
+func (client *Client) Clear(prefix ...string) {
+	client.ClearWithContext(context.Background(), prefix...)
 
 }
 
 // ClearWithContext clear all records with context
-func (client *Client) ClearWithContext(ctx context.Context) {
+func (client *Client) ClearWithContext(ctx context.Context, prefix ...string) {
+	var ns = ""
+	if len(prefix) > 0 {
+		ns = prefix[0]
+	}
+
 	for key := range client.cache.Items() {
-		if strings.HasPrefix(key, client.namespace) {
+		if strings.HasPrefix(key, client.Key(ns)) {
 			client.cache.Delete(key)
 		}
 	}
@@ -165,7 +204,8 @@ func (client *Client) Client() *cache.Cache {
 
 }
 
-func (client *Client) getKey(k string) string {
+// Key key
+func (client *Client) Key(k string) string {
 	if client.namespace == "" {
 		return k
 	}

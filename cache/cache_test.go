@@ -46,14 +46,34 @@ func TestRedisCache(t *testing.T) {
 	assert.NoError(t, err)
 
 	for i := 0; i < 5; i++ {
-		redisCache.Set(fmt.Sprintf("test_%d", i), &author, cache.NoExpiration)
-		redisCache.SetWithDefault(fmt.Sprintf("test_%d", i), &author)
-		redisCache.SetWithContextDefault(context.Background(), fmt.Sprintf("test_%d", i), &author)
+		redisCache.Set(fmt.Sprintf("test1_%d", i), &author, cache.NoExpiration)
+		redisCache.SetWithDefault(fmt.Sprintf("test2_%d", i), &author)
+		redisCache.SetWithContextDefault(context.Background(), fmt.Sprintf("test3_%d", i), &author)
 	}
 
 	var list = redisCache.GetAllItemsWithContext(context.Background())
 	for _, item := range list {
 		fmt.Println("list", item)
+
+	}
+
+	var list2 = redisCache.GetAllItemsWithContext(context.Background(), "test2")
+	for _, item := range list2 {
+		fmt.Println("test2", item)
+
+	}
+
+	redisCache.Clear("test2")
+
+	var list22 = redisCache.GetAllItemsWithContext(context.Background(), "test2")
+	for _, item := range list22 {
+		fmt.Println("test22", item)
+
+	}
+
+	var list3 = redisCache.GetAllItemsWithContext(context.Background(), "test3")
+	for _, item := range list3 {
+		fmt.Println("test3", item)
 
 	}
 	for i := 0; i < 5; i++ {
@@ -67,7 +87,6 @@ func TestRedisCache(t *testing.T) {
 		redisCache.Logger().Printf("Key %s value = %v \n", key, result)
 	}
 
-	redisCache.Clear()
 	for i := 0; i < 5; i++ {
 		var key = fmt.Sprintf("test_%d", i)
 		var result Author

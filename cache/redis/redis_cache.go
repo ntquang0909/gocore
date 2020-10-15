@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -99,9 +100,40 @@ func (client *Client) Get(key string, value interface{}) error {
 	return client.GetWithContext(context.Background(), key, value)
 }
 
+// GetAllKeysWithContext get all keys with context
+func (client *Client) GetAllKeysWithContext(ctx context.Context, prefix ...string) []string {
+	var ns = ""
+	if len(prefix) > 0 {
+		ns = prefix[0]
+	}
+	var keys = []string{}
+	var iter = client.rdb.Scan(ctx, 0, fmt.Sprintf("%s_%s*", client.namespace, ns), 0).Iterator()
+	for iter.Next(ctx) {
+		var key = iter.Val()
+		keys = append(keys, key)
+	}
+
+	return keys
+}
+
+// GetAllKeys get all keys
+func (client *Client) GetAllKeys(prefix ...string) []string {
+	return client.GetAllKeysWithContext(context.Background(), prefix...)
+}
+
+// GetAllItems get all items
+func (client *Client) GetAllItems(prefix ...string) (list []types.Item) {
+	return client.GetAllItemsWithContext(context.Background(), prefix...)
+}
+
 // GetAllItemsWithContext get key
-func (client *Client) GetAllItemsWithContext(ctx context.Context) (list []types.Item) {
-	var iter = client.rdb.Scan(ctx, 0, fmt.Sprintf("%s*", client.namespace), 0).Iterator()
+func (client *Client) GetAllItemsWithContext(ctx context.Context, prefix ...string) (list []types.Item) {
+	var ns = ""
+	if len(prefix) > 0 {
+		ns = prefix[0]
+	}
+
+	var iter = client.rdb.Scan(ctx, 0, fmt.Sprintf("%s_%s*", client.namespace, ns), 0).Iterator()
 	for iter.Next(ctx) {
 		var key = iter.Val()
 		val, err := client.rdb.Get(ctx, key).Result()
@@ -120,7 +152,7 @@ func (client *Client) GetAllItemsWithContext(ctx context.Context) (list []types.
 
 // GetWithContext get key
 func (client *Client) GetWithContext(ctx context.Context, key string, value interface{}) error {
-	var k = client.getKey(key)
+	var k = client.Key(key)
 	val, err := client.rdb.Get(ctx, k).Result()
 
 	if err != nil {
@@ -157,7 +189,7 @@ func (client *Client) SetWithContext(ctx context.Context, key string, value inte
 		client.logger.Printf("Marshal entity with key = %s error: %v\n", key, err)
 		return err
 	}
-	var k = client.getKey(key)
+	var k = client.Key(key)
 	err = client.rdb.Set(ctx, k, cacheEntry, expiration).Err()
 	if err != nil {
 		client.logger.Printf("Set value with key = %s error: %v\n", key, err)
@@ -180,7 +212,7 @@ func (client *Client) Delete(keys ...string) error {
 func (client *Client) DeleteWithContext(ctx context.Context, keys ...string) error {
 	var listKey = []string{}
 	for _, key := range keys {
-		listKey = append(listKey, client.getKey(key))
+		listKey = append(listKey, client.Key(key))
 	}
 	var err = client.rdb.Del(ctx, listKey...).Err()
 	if err != nil {
@@ -191,19 +223,25 @@ func (client *Client) DeleteWithContext(ctx context.Context, keys ...string) err
 }
 
 // Clear clear all records
-func (client *Client) Clear() {
-	client.ClearWithContext(context.Background())
+func (client *Client) Clear(prefix ...string) {
+	client.ClearWithContext(context.Background(), prefix...)
 
 }
 
 // ClearWithContext clear all records with context
-func (client *Client) ClearWithContext(ctx context.Context) {
-	var iter = client.rdb.Scan(ctx, 0, fmt.Sprintf("%s*", client.namespace), 0).Iterator()
+func (client *Client) ClearWithContext(ctx context.Context, prefix ...string) {
+	var ns = ""
+	if len(prefix) > 0 {
+		ns = prefix[0]
+	}
+	var iter = client.rdb.Scan(ctx, 0, fmt.Sprintf("%s_%s*", client.namespace, ns), 0).Iterator()
 	for iter.Next(ctx) {
 		var key = iter.Val()
-		var err = client.rdb.Del(ctx, key).Err()
-		if err != nil {
-			client.logger.Printf("Clear key = %s error: %v\n", key, err)
+		if strings.HasPrefix(key, client.Key(ns)) {
+			var err = client.rdb.Del(ctx, key).Err()
+			if err != nil {
+				client.logger.Printf("Clear key = %s error: %v\n", key, err)
+			}
 		}
 	}
 
@@ -215,7 +253,8 @@ func (client *Client) RedisClient() *redis.Client {
 
 }
 
-func (client *Client) getKey(k string) string {
+// Key get full key
+func (client *Client) Key(k string) string {
 	if client.namespace == "" {
 		return k
 	}
