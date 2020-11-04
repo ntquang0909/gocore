@@ -71,6 +71,7 @@ func New(config *Config) *Logger {
 			DateFormat:   dateFormat,
 			TimeLocation: timeLocation,
 			Colorful:     true,
+			Notifier:     nil,
 		}
 	}
 
