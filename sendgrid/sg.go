@@ -80,16 +80,9 @@ func (mailer *Mailer) SendMail(params SendMailParams) error {
 	var addressAlias = mailer.config.SenderMail
 	var nameAlias = mailer.config.SenderName
 	var bccMails = mailer.config.BccAddresses
+	var ccMails = mailer.config.CcAddresses
 	var userName = params.Name
 	var userEmail = params.Email
-
-	// var isDRMACMail = strings.Contains(userEmail, "@aol.com") || strings.Contains(userEmail, "@yahoo.com")
-	// if isDRMACMail {
-	// 	var index = strings.Index(userEmail, "@")
-	// 	if index != -1 {
-	// 		addressAlias = fmt.Sprintf("no-reply%s", userEmail[index:])
-	// 	}
-	// }
 
 	var m = mail.NewV3Mail()
 	var e = mail.NewEmail(nameAlias, addressAlias)
@@ -101,32 +94,14 @@ func (mailer *Mailer) SendMail(params SendMailParams) error {
 	}
 	p.AddTos(tos...)
 
-	cc := []*mail.Email{}
-
-	if bccMails != "" {
-		var s1 = strings.Split(bccMails, "|")
-		if len(s1) > 0 {
-			for _, nameMail := range s1 {
-				var s2 = strings.Split(nameMail, ",")
-				if len(s2) == 2 {
-					if s2[1] != userEmail {
-						cc = append(cc, mail.NewEmail(s2[0], s2[1]))
-
-					}
-				}
-			}
-		} else {
-			var s2 = strings.Split(bccMails, ",")
-			if len(s2) == 2 {
-				if s2[1] != userEmail {
-					cc = append(cc, mail.NewEmail(s2[0], s2[1]))
-				}
-			}
-		}
+	var bcc = mailer.splitEmails(bccMails, userEmail)
+	if len(bcc) > 0 {
+		p.AddBCCs(bcc...)
 	}
 
+	var cc = mailer.splitEmails(ccMails, userEmail)
 	if len(cc) > 0 {
-		p.AddBCCs(cc...)
+		p.AddCCs(cc...)
 	}
 
 	m.AddPersonalizations(p)
@@ -179,7 +154,31 @@ func (mailer *Mailer) SendMail(params SendMailParams) error {
 		return nil
 	}
 
-	mailer.logger.Printf("Mail sent to %s\n", params.Email)
-
 	return nil
+}
+
+func (mailer *Mailer) splitEmails(mailList, mailTo string) []*mail.Email {
+	var cc = []*mail.Email{}
+	if mailList != "" {
+		var s1 = strings.Split(mailList, "|")
+		if len(s1) > 0 {
+			for _, nameMail := range s1 {
+				var s2 = strings.Split(nameMail, ",")
+				if len(s2) == 2 {
+					if strings.ToLower(s2[1]) != strings.ToLower(mailTo) {
+						cc = append(cc, mail.NewEmail(s2[0], s2[1]))
+
+					}
+				}
+			}
+		} else {
+			var s2 = strings.Split(mailList, ",")
+			if len(s2) == 2 {
+				if s2[1] != mailTo {
+					cc = append(cc, mail.NewEmail(s2[0], s2[1]))
+				}
+			}
+		}
+	}
+	return cc
 }
