@@ -20,7 +20,8 @@ import (
 
 func main() {
 	gotenv.Load("./.env")
-	testLogWithHTTP()
+	testStorageServe()
+	// testLogWithHTTP()
 	// testS3()
 }
 
@@ -70,6 +71,15 @@ func testLoggerWithLumberjack() {
 		logger.Debug("count sssss", i, "asdfasdf")
 		time.Sleep(time.Second)
 	}
+}
+
+func testStorageServe() {
+	var e = echo.New()
+	var st = storage.New(storage.DefaultConfig)
+
+	st.NewRouter(e.Group("/api"))
+
+	e.Start(":1234")
 }
 func testS3() {
 	var e = echo.New()
