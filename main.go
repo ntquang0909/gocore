@@ -20,9 +20,9 @@ import (
 
 func main() {
 	gotenv.Load("./.env")
-	testStorageServe()
+	// testStorageServe()
 	// testLogWithHTTP()
-	// testS3()
+	testS3()
 }
 
 func testLoggerWithDailyRotate() {
@@ -110,6 +110,42 @@ func testS3() {
 			Region:    os.Getenv("AWS_REGION"),
 		}
 		result, err := s3.New(config).UploadMultipleFile(c.Request().Context(), fileUploads)
+		if err != nil {
+			return err
+		}
+		return c.JSON(200, result)
+	})
+
+	e.PUT("/upload_thumbnail", func(c echo.Context) error {
+		form, err := c.MultipartForm()
+		if err != nil {
+			return err
+		}
+
+		var files = form.File["files"]
+		var fileUploads = s3.UploadMultipleFileWithThumbnailParams{
+			ACL:                     "public-read",
+			UploadToBucket:          os.Getenv("AWS_S3_ORIGIN_BUCKET"),
+			UploadToThumbnailBucket: os.Getenv("AWS_S3_RESIZE_BUCKET"),
+			UploadFiles:             []s3.UploadFileWithThumbnailParams{},
+		}
+		fmt.Println(files)
+		for _, file := range files {
+			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileWithThumbnailParams{
+				FileHeader: file,
+				Prefix:     "test",
+				ThumbnailSize: &s3.ThumbnailSize{
+					Width:  120,
+					Prefix: "test",
+				},
+			})
+		}
+		var config = &s3.Config{
+			AccessKey: os.Getenv("AWS_ACCESS_KEY"),
+			SecretKey: os.Getenv("AWS_SECRET_KEY"),
+			Region:    os.Getenv("AWS_REGION"),
+		}
+		result, err := s3.New(config).UploadMultipleFileWithThumbnail(c.Request().Context(), fileUploads)
 		if err != nil {
 			return err
 		}

@@ -20,6 +20,7 @@ type ImageContentType string
 var (
 	PNG  ImageContentType = "image/png"
 	JPEG ImageContentType = "image/jpeg"
+	JPG  ImageContentType = "image/jpg"
 )
 
 // UploadImageBase64Params params
