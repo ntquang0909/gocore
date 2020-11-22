@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -88,7 +89,13 @@ func testLoggerWithLumberjack() {
 func testStorageClient() {
 	var st = storage.New(storage.DefaultConfig)
 
-	st.WithClient("http://localhost:1234/file")
+	st.WithClient("http://localhost:1234/file", nil)
+	// st.WithClient("http://localhost:1234/file", &storage.ClientAuthConfig{
+	// 	BasicAuth: &storage.BasicAuth{
+	// 		UserName: "1",
+	// 		Password: "1",
+	// 	},
+	// })
 
 	var params = []storage.UploadFileParams{}
 	params = append(params, storage.UploadFileParams{
@@ -108,14 +115,23 @@ func testStorageClient() {
 	// errorFiles := st.Client().DeleteFiles("1.png", "2.png")
 	// fmt.Println(errorFiles)
 
-
+	st.Client().DeleteFiles("1.png", "2.png")
 }
 
 func testStorageServe() {
 	var e = echo.New()
 	var st = storage.New(storage.DefaultConfig)
+	var group = e.Group("/file")
+	group.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+		// Be careful to use constant time comparison to prevent timing attacks
+		if subtle.ConstantTimeCompare([]byte(username), []byte("1")) == 1 &&
+			subtle.ConstantTimeCompare([]byte(password), []byte("1")) == 1 {
+			return true, nil
+		}
+		return false, nil
+	}))
 
-	st.WithRouter(e.Group("/file")).WithClient("http://localhost:1234/file")
+	st.WithRouter(group)
 
 	e.Start(":1234")
 

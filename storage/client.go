@@ -8,11 +8,24 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
+// BasicAuth basic auth
+type BasicAuth struct {
+	UserName string
+	Password string
+}
+
+// ClientAuthConfig auth  config
+type ClientAuthConfig struct {
+	BasicAuth   *BasicAuth
+	BearerToken string
+}
+
 // Client http client
 type Client struct {
 	*gorequest.SuperAgent
 	baseURL string
 	storage *Storage
+	auth    *ClientAuthConfig
 }
 
 // NewClient init
@@ -41,6 +54,16 @@ type UploadFileParams struct {
 func (c *Client) UploadFiles(params ...UploadFileParams) ([]*UploadFileResult, error) {
 	var url = fmt.Sprintf("%s/upload", c.baseURL)
 	var req = c.Post(url).Type("multipart")
+	req = c.setReqAuth(req)
+
+	if c.auth != nil {
+		if c.auth.BasicAuth != nil {
+			req.SetBasicAuth(c.auth.BasicAuth.UserName, c.auth.BasicAuth.Password)
+		}
+		if c.auth.BearerToken != "" {
+			req.Set("Authorization", fmt.Sprintf("Bearer %s", c.auth.BearerToken))
+		}
+	}
 
 	for _, param := range params {
 		f, err := os.Open(param.Path)
@@ -74,16 +97,31 @@ func (c *Client) UploadFiles(params ...UploadFileParams) ([]*UploadFileResult, e
 }
 
 // DeleteFiles upload file multiple files
-func (c *Client) DeleteFiles(files ...string) (errorsFiles []string) {
-	for _, file := range files {
-		var url = fmt.Sprintf("%s/%s", c.baseURL, file)
-		_, _, errs := c.Delete(url).End()
-		if errs != nil || len(errs) > 0 {
-			c.storage.logger.Printf("Delete file %s error: %v", file, errs)
-			errorsFiles = append(errorsFiles, file)
-			continue
+func (c *Client) DeleteFiles(files ...string) error {
+	var url = fmt.Sprintf("%s", c.baseURL)
+	var form = DeleteMultiFilesParams{
+		Files: files,
+	}
+	var req = c.Delete(url)
+	req = c.setReqAuth(req)
+
+	_, _, errs := req.Send(form).End()
+	if len(errs) > 0 {
+		return errs[0]
+	}
+
+	return nil
+}
+
+func (c *Client) setReqAuth(req *gorequest.SuperAgent) *gorequest.SuperAgent {
+	if c.auth != nil {
+		if c.auth.BasicAuth != nil {
+			req.SetBasicAuth(c.auth.BasicAuth.UserName, c.auth.BasicAuth.Password)
+		}
+		if c.auth.BearerToken != "" {
+			req.Set("Authorization", fmt.Sprintf("Bearer %s", c.auth.BearerToken))
 		}
 	}
 
-	return errorsFiles
+	return req
 }

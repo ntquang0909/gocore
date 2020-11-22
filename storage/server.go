@@ -17,14 +17,17 @@ func (storage *Storage) WithRouter(group *echo.Group) *Storage {
 	group.GET("/:id/download", storage.downloadFileHandler)
 	group.GET("/:id", storage.previewFileHandler)
 	group.DELETE("/:id", storage.deleteFileHandler)
+	group.DELETE("", storage.deleteMultiFilesHandler)
 	group.GET("/list", storage.listFileHandler)
 	group.Static("/images", storage.rootDir)
+
 	return storage
 }
 
 // WithClient with client
-func (storage *Storage) WithClient(baseURL string) *Storage {
+func (storage *Storage) WithClient(baseURL string, authConfig *ClientAuthConfig) *Storage {
 	storage.client = newClient(storage, baseURL)
+	storage.client.auth = authConfig
 	return storage
 }
 
@@ -146,4 +149,21 @@ func (storage *Storage) deleteFileHandler(c echo.Context) error {
 	}
 
 	return c.JSON(200, response)
+}
+
+// DeleteMultiFilesParams params
+type DeleteMultiFilesParams struct {
+	Files []string `json:"files"`
+}
+
+func (storage *Storage) deleteMultiFilesHandler(c echo.Context) error {
+	var form DeleteMultiFilesParams
+	var err = c.Bind(&form)
+	if err != nil {
+		return err
+	}
+
+	storage.Remove(form.Files...)
+
+	return c.JSON(200, nil)
 }
