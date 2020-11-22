@@ -108,7 +108,6 @@ func testStorageClient() {
 	// errorFiles := st.Client().DeleteFiles("1.png", "2.png")
 	// fmt.Println(errorFiles)
 
-	st.Client().DownloadFiles("1.png", "2.png")
 
 }
 
