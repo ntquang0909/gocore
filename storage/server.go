@@ -1,27 +1,31 @@
 package storage
 
 import (
+	"fmt"
 	"io"
 	"mime/multipart"
+	"net/http"
+	"os"
 	"sync"
 
 	"github.com/labstack/echo/v4"
-	"github.com/rs/xid"
-	"github.com/thaitanloi365/gocore/cache"
 )
 
-// NewRouter setup router
-func (storage *Storage) NewRouter(group *echo.Group) {
+// WithRouter with router
+func (storage *Storage) WithRouter(group *echo.Group) *Storage {
 	group.POST("/upload", storage.uploadFileHandler)
 	group.GET("/:id/download", storage.downloadFileHandler)
-	group.DELETE("/:id/delete", storage.deleteFileHandler)
+	group.GET("/:id", storage.previewFileHandler)
+	group.DELETE("/:id", storage.deleteFileHandler)
 	group.GET("/list", storage.listFileHandler)
+	group.Static("/images", storage.rootDir)
+	return storage
 }
 
-// UploadResult params
-type UploadResult struct {
-	ID       string `json:"id"`
-	Filename string `json:"filename"`
+// WithClient with client
+func (storage *Storage) WithClient(baseURL string) *Storage {
+	storage.client = newClient(storage, baseURL)
+	return storage
 }
 
 func (storage *Storage) uploadFileHandler(c echo.Context) error {
@@ -30,8 +34,9 @@ func (storage *Storage) uploadFileHandler(c echo.Context) error {
 		return err
 	}
 	var files = form.File["files"]
-	var results []*UploadResult
+	var results []string
 	var wg sync.WaitGroup
+
 	for _, file := range files {
 		wg.Add(1)
 		go func(file *multipart.FileHeader, wg *sync.WaitGroup) error {
@@ -44,8 +49,9 @@ func (storage *Storage) uploadFileHandler(c echo.Context) error {
 			}
 			defer src.Close()
 
-			var id = xid.New().String()
-			dst, err := storage.Create(id)
+			storage.logger.Printf("Uploading file %s size = %v\n", file.Filename, file.Size)
+
+			dst, err := storage.Create(file.Filename)
 			if err != nil {
 				storage.logger.Printf("Create file error: %v\n", err)
 				return err
@@ -57,35 +63,23 @@ func (storage *Storage) uploadFileHandler(c echo.Context) error {
 				return err
 			}
 
-			if storage.config.Cache != nil {
-				var cacheItem = FileCacheItem{
-					ID:       id,
-					Filename: file.Filename,
-				}
-				err = storage.config.Cache.Set(cacheItem.ID, &cacheItem, cache.NoExpiration)
-				if err != nil {
-					storage.logger.Printf("Set cache item error: %v\n", err)
-				}
-			}
-			results = append(results, &UploadResult{
-				ID:       id,
-				Filename: file.Filename,
-			})
+			results = append(results, file.Filename)
 			return nil
 		}(file, &wg)
 	}
 	wg.Wait()
 
-	var response = map[string]interface{}{
-		"files": results,
-	}
-	return c.JSON(200, response)
+	return c.JSON(200, results)
 }
 
 func (storage *Storage) downloadFileHandler(c echo.Context) error {
 	var fileID = c.Param("id")
 	_, err := storage.Stat(fileID)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("%s is not found", fileID))
+		}
+
 		return err
 	}
 
@@ -104,6 +98,23 @@ func (storage *Storage) downloadFileHandler(c echo.Context) error {
 	return c.Attachment(file, name)
 }
 
+func (storage *Storage) previewFileHandler(c echo.Context) error {
+	var fileID = c.Param("id")
+	_, err := storage.Stat(fileID)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("%s is not found", fileID))
+		}
+
+		return err
+	}
+
+	var file = storage.Path(fileID)
+	// var name = fileID
+
+	return c.File(file)
+}
+
 func (storage *Storage) listFileHandler(c echo.Context) error {
 	files, err := storage.Walk()
 	if err != nil {
@@ -119,9 +130,15 @@ func (storage *Storage) deleteFileHandler(c echo.Context) error {
 	var fileID = c.Param("id")
 	_, err := storage.Stat(fileID)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("%s is not found", fileID))
+		}
+
+		storage.logger.Printf("Delete file error: %v\n", err)
 		return err
 	}
 
+	storage.logger.Printf("Deleting file %v\n", fileID)
 	storage.Remove(fileID)
 
 	var response = map[string]interface{}{

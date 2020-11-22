@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -20,9 +22,19 @@ import (
 
 func main() {
 	gotenv.Load("./.env")
-	// testStorageServe()
+
+	var isClient = flag.Bool("c", false, "is  client")
+	flag.Parse()
+
+	if *isClient {
+		testStorageClient()
+	} else {
+		testStorageServe()
+	}
+
 	// testLogWithHTTP()
-	testS3()
+	// testS3()
+
 }
 
 func testLoggerWithDailyRotate() {
@@ -73,14 +85,43 @@ func testLoggerWithLumberjack() {
 	}
 }
 
+func testStorageClient() {
+	var st = storage.New(storage.DefaultConfig)
+
+	st.WithClient("http://localhost:1234/file")
+
+	var params = []storage.UploadFileParams{}
+	params = append(params, storage.UploadFileParams{
+		Path: "/Users/loi/Desktop/1.png",
+	})
+	params = append(params, storage.UploadFileParams{
+		Path: "/Users/loi/Desktop/2.png",
+	})
+
+	files, err := st.Client().UploadFiles(params...)
+	if err != nil {
+		panic(err)
+	}
+	data, _ := json.MarshalIndent(&files, "", "    ")
+	fmt.Println(string(data))
+
+	// errorFiles := st.Client().DeleteFiles("1.png", "2.png")
+	// fmt.Println(errorFiles)
+
+	st.Client().DownloadFiles("1.png", "2.png")
+
+}
+
 func testStorageServe() {
 	var e = echo.New()
 	var st = storage.New(storage.DefaultConfig)
 
-	st.NewRouter(e.Group("/api"))
+	st.WithRouter(e.Group("/file")).WithClient("http://localhost:1234/file")
 
 	e.Start(":1234")
+
 }
+
 func testS3() {
 	var e = echo.New()
 
@@ -96,7 +137,6 @@ func testS3() {
 			UploadToBucket: os.Getenv("AWS_S3_ORIGIN_BUCKET"),
 			UploadFiles:    []s3.UploadFileParams{},
 		}
-		fmt.Println(files)
 		for _, file := range files {
 			fmt.Println("file", file.Filename)
 			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileParams{
@@ -170,6 +210,7 @@ func testS3() {
 	})
 	e.Start(":1234")
 }
+
 func testStorage() {
 	var storage = storage.New(&storage.Config{
 		RootDir: "temp",

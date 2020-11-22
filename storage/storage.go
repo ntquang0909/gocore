@@ -14,6 +14,7 @@ type Storage struct {
 	config  *Config
 	rootDir string
 	logger  Logger
+	client  *Client
 }
 
 // FileInfo info
@@ -42,6 +43,11 @@ func New(cnf *Config) *Storage {
 
 	return storage
 
+}
+
+// Client client
+func (storage *Storage) Client() *Client {
+	return storage.client
 }
 
 // Create new file
@@ -111,6 +117,10 @@ func (storage *Storage) RemoveAll(path string) error {
 func (storage *Storage) Walk() ([]*FileInfo, error) {
 	var files = []*FileInfo{}
 	var err = filepath.Walk(storage.rootDir, func(path string, info os.FileInfo, err error) error {
+		if info == nil {
+			return nil
+		}
+
 		if info.IsDir() {
 			return nil
 		}
