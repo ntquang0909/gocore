@@ -62,7 +62,7 @@ func (s3 *S3) UploadMultipleFile(ctx context.Context, params UploadMultipleFileP
 			var ext = path.Ext(param.FileHeader.Filename)
 			var key = fmt.Sprintf("%s/%s%s", param.Prefix, xid.New(), ext)
 
-			s3.logger.Printf("Uploading file %s\n", key)
+			s3.logger.Printf("Uploading file %s, size = %d\n", key, param.FileHeader.Size)
 
 			var acl = "public-read"
 			var contentDisposition = "inline"

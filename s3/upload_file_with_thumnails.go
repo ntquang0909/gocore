@@ -7,6 +7,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"io/ioutil"
 	"mime/multipart"
 	"path"
 	"sync"
@@ -40,9 +41,10 @@ type UploadMultipleFileWithThumbnailParams struct {
 	ACL                     string
 }
 
+// UploadFileWithThumbnailResponse response
 type UploadFileWithThumbnailResponse struct {
-	Photo     string
-	Thumbnail string
+	Photo     string `json:"photo"`
+	Thumbnail string `json:"thumbnail"`
 }
 
 // CalcResponsiveSize calc responsive size
@@ -88,6 +90,7 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 
 			file, err := param.FileHeader.Open()
 			if err != nil {
+				s3.logger.Printf("Open file %s, err %v\n", param.FileHeader.Filename, err)
 				channel <- nil
 				return
 			}
@@ -98,7 +101,7 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 			var ext = path.Ext(param.FileHeader.Filename)
 			var key = fmt.Sprintf("%s/%s%s", param.Prefix, fileID, ext)
 
-			s3.logger.Printf("Uploading file %s\n", key)
+			s3.logger.Printf("Uploading file %s, size = %d\n", key, param.FileHeader.Size)
 
 			var acl = "public-read"
 			var contentDisposition = "inline"
@@ -110,29 +113,40 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 				contentDisposition = param.ContentDisposition
 			}
 
+			buffer, err := ioutil.ReadAll(file)
+			if err != nil {
+				s3.logger.Printf("Read buffer file %s, err %v\n", param.FileHeader.Filename, err)
+				channel <- nil
+				return
+			}
+
 			var imageOrigin image.Image
 			var contentType = ImageContentType(ct)
 			switch contentType {
 			case PNG:
-				imageOrigin, err = png.Decode(file)
+				imageOrigin, err = png.Decode(bytes.NewBuffer(buffer))
 				if err != nil {
+					s3.logger.Printf("PNG decode file %s, err %v\n", param.FileHeader.Filename, err)
 					channel <- nil
 					return
 				}
 
 			case JPEG, JPG:
-				imageOrigin, err = jpeg.Decode(file)
+				imageOrigin, err = jpeg.Decode(bytes.NewBuffer(buffer))
 				if err != nil {
+					s3.logger.Printf("JPEG, JPG decode file %s, err %v\n", param.FileHeader.Filename, err)
 					channel <- nil
 					return
 				}
 			}
 
 			var size = imageOrigin.Bounds().Max
+
 			result, err := svc.Upload(&s3manager.UploadInput{
-				Bucket:             aws.String(params.UploadToBucket),
-				Key:                aws.String(key),
-				Body:               file,
+				Bucket: aws.String(params.UploadToBucket),
+				Key:    aws.String(key),
+				Body:   bytes.NewBuffer(buffer),
+
 				ACL:                aws.String(acl),
 				ContentType:        aws.String(string(contentType)),
 				ContentDisposition: aws.String(contentDisposition),
@@ -143,13 +157,14 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 			})
 			if err != nil {
 				channel <- nil
+				s3.logger.Printf("Upload image file %s err %v\n", key, err)
 				return
 			}
 
 			var uploadResult = &UploadFileWithThumbnailResponse{
 				Photo: result.Location,
 			}
-			s3.logger.Printf("Upload file %s at %s\n", key, result.Location)
+			s3.logger.Printf("Upload file %s at %s, size = %v\n", key, result.Location, size)
 
 			if param.ThumbnailSize != nil {
 				param.ThumbnailSize.CalcResponsiveSize(size.X, size.Y)
@@ -180,7 +195,9 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 					})
 					if err == nil {
 						uploadResult.Thumbnail = result.Location
-						s3.logger.Printf("Upload thumbnail file %s at %s\n", key, result.Location)
+						s3.logger.Printf("Upload thumbnail file %s at %s, size = %v\n", key, result.Location, param.ThumbnailSize)
+					} else {
+						s3.logger.Printf("Upload thumbnail file %s err %v\n", key, err)
 					}
 				}
 			}

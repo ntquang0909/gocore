@@ -27,14 +27,15 @@ func main() {
 	var isClient = flag.Bool("c", false, "is  client")
 	flag.Parse()
 
-	if *isClient {
-		testStorageClient()
-	} else {
-		testStorageServe()
-	}
+	fmt.Println(isClient)
+	// if *isClient {
+	// 	testStorageClient()
+	// } else {
+	// 	testStorageServe()
+	// }
 
 	// testLogWithHTTP()
-	// testS3()
+	testS3()
 
 }
 
@@ -184,7 +185,7 @@ func testS3() {
 			UploadToThumbnailBucket: os.Getenv("AWS_S3_RESIZE_BUCKET"),
 			UploadFiles:             []s3.UploadFileWithThumbnailParams{},
 		}
-		fmt.Println(files)
+
 		for _, file := range files {
 			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileWithThumbnailParams{
 				FileHeader: file,
