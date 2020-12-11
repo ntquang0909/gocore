@@ -187,9 +187,13 @@ func testS3() {
 		}
 
 		for _, file := range files {
+			f, err := file.Open()
+			if err != nil {
+				continue
+			}
 			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileWithThumbnailParams{
-				FileHeader: file,
-				Prefix:     "test",
+				File:   f,
+				Prefix: "test",
 				ThumbnailSize: &s3.ThumbnailSize{
 					Width:  120,
 					Prefix: "test",
