@@ -7,6 +7,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/elazarl/goproxy v0.0.0-20201021153353-00ad82a08272 // indirect
+	github.com/gabriel-vasile/mimetype v1.1.2 // indirect
 	github.com/go-redis/redis/v8 v8.0.0
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/inconshreveable/log15 v0.0.0-20200109203555-b30bc20e4fd1 // indirect

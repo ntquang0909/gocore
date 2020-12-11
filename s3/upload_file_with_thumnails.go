@@ -8,13 +8,13 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io/ioutil"
-	"mime/multipart"
-	"path"
+	"os"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/disintegration/imaging"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/rs/xid"
 )
 
@@ -27,7 +27,7 @@ type ThumbnailSize struct {
 
 // UploadFileWithThumbnailParams single file params
 type UploadFileWithThumbnailParams struct {
-	FileHeader         *multipart.FileHeader
+	File               *os.File
 	Prefix             string
 	ContentDisposition string
 	ThumbnailSize      *ThumbnailSize
@@ -88,21 +88,6 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 
 			}()
 
-			file, err := param.FileHeader.Open()
-			if err != nil {
-				s3.logger.Printf("Open file %s, err %v\n", param.FileHeader.Filename, err)
-				channel <- nil
-				return
-			}
-			defer file.Close()
-
-			var fileID = xid.New()
-			var ct = param.FileHeader.Header.Get("Content-Type")
-			var ext = path.Ext(param.FileHeader.Filename)
-			var key = fmt.Sprintf("%s/%s%s", param.Prefix, fileID, ext)
-
-			s3.logger.Printf("Uploading file %s, size = %d\n", key, param.FileHeader.Size)
-
 			var acl = "public-read"
 			var contentDisposition = "inline"
 			if params.ACL != "" {
@@ -113,20 +98,26 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 				contentDisposition = param.ContentDisposition
 			}
 
-			buffer, err := ioutil.ReadAll(file)
+			buffer, err := ioutil.ReadFile(param.File.Name())
 			if err != nil {
-				s3.logger.Printf("Read buffer file %s, err %v\n", param.FileHeader.Filename, err)
+				s3.logger.Printf("Read buffer file %s, err %v\n", param.File, err)
 				channel <- nil
 				return
 			}
 
+			var fileID = xid.New()
+			var mine = mimetype.Detect(buffer)
+			var key = fmt.Sprintf("%s/%s%s", param.Prefix, fileID, mine.Extension())
+
+			s3.logger.Printf("Uploading file %s, size = %d\n", key, len(buffer))
+
 			var imageOrigin image.Image
-			var contentType = ImageContentType(ct)
+			var contentType = ImageContentType(mine.String())
 			switch contentType {
 			case PNG:
 				imageOrigin, err = png.Decode(bytes.NewBuffer(buffer))
 				if err != nil {
-					s3.logger.Printf("PNG decode file %s, err %v\n", param.FileHeader.Filename, err)
+					s3.logger.Printf("PNG decode file %s, err %v\n", param.File.Name(), err)
 					channel <- nil
 					return
 				}
@@ -134,7 +125,7 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 			case JPEG, JPG:
 				imageOrigin, err = jpeg.Decode(bytes.NewBuffer(buffer))
 				if err != nil {
-					s3.logger.Printf("JPEG, JPG decode file %s, err %v\n", param.FileHeader.Filename, err)
+					s3.logger.Printf("JPEG, JPG decode file %s, err %v\n", param.File.Name(), err)
 					channel <- nil
 					return
 				}
@@ -180,7 +171,7 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 				var bufferEncode = new(bytes.Buffer)
 				err = imaging.Encode(bufferEncode, thumbnail, format)
 				if err == nil {
-					var key = fmt.Sprintf("%s/%s%s", param.Prefix, fileID, ext)
+					var key = fmt.Sprintf("%s/%s%s", param.Prefix, fileID, mine.Extension())
 					result, err := svc.Upload(&s3manager.UploadInput{
 						Bucket:             aws.String(params.UploadToThumbnailBucket),
 						Key:                aws.String(key),
