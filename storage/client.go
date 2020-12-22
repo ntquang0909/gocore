@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"crypto/tls"
 	"fmt"
 	"os"
 	"path"
@@ -30,8 +31,10 @@ type Client struct {
 
 // NewClient init
 func newClient(storage *Storage, baseURL string) *Client {
+	var agent = gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+
 	return &Client{
-		SuperAgent: gorequest.New(),
+		SuperAgent: agent,
 		baseURL:    baseURL,
 		storage:    storage,
 	}
