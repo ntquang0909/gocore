@@ -1,0 +1,177 @@
+
+"1231231" DEBUG 0 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 1 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 2 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 3 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 4 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 5 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 6 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 7 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 8 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 9 Test printf %!s(MISSING) %!d(MISSING)
+
+2020-12-25 15:27:47 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:37 aaaaa
+[info] asdf%!(EXTRA string=asdf, string=ss, string=sss)
+
+2020-12-25 15:27:47 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 0 
+
+2020-12-25 15:27:47 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 0 asdfasdf 
+
+2020-12-25 15:27:47 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 0 "asdfasdf" 
+
+2020-12-25 15:27:48 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 1 
+
+2020-12-25 15:27:48 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 1 asdfasdf 
+
+2020-12-25 15:27:48 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 1 "asdfasdf" 
+
+2020-12-25 15:27:49 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 2 
+
+2020-12-25 15:27:49 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 2 asdfasdf 
+
+2020-12-25 15:27:49 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 2 "asdfasdf" 
+
+2020-12-25 15:27:50 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 3 
+
+2020-12-25 15:27:50 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 3 asdfasdf 
+
+2020-12-25 15:27:50 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 3 "asdfasdf" 
+
+2020-12-25 15:27:51 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 4 
+
+2020-12-25 15:27:51 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 4 asdfasdf 
+
+2020-12-25 15:27:51 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 4 "asdfasdf" 
+
+2020-12-25 15:27:52 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 5 
+
+2020-12-25 15:27:52 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 5 asdfasdf 
+
+2020-12-25 15:27:52 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 5 "asdfasdf" 
+
+2020-12-25 15:27:53 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 6 
+
+2020-12-25 15:27:53 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 6 asdfasdf 
+
+2020-12-25 15:27:53 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 6 "asdfasdf" 
+
+2020-12-25 15:27:54 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 7 
+
+2020-12-25 15:27:54 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 7 asdfasdf 
+
+2020-12-25 15:27:54 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 7 "asdfasdf" 
+
+2020-12-25 15:27:55 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:39 count 8 
+
+2020-12-25 15:27:55 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:40 count sssss 8 asdfasdf 
+
+2020-12-25 15:27:55 +07:00 DEBUG /Users/loi/Projects/gocore/logger/logger_test.go:41 "count sssss" 8 "asdfasdf" 
+
+"1231231" DEBUG 0 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 1 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 2 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 3 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 4 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 5 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 6 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 7 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 8 Test printf %!s(MISSING) %!d(MISSING)
+
+"1231231" DEBUG 9 Test printf %!s(MISSING) %!d(MISSING)
+
+DEBUG "1231231" Test printf 0 %!d(MISSING)
+
+DEBUG "1231231" Test printf 1 %!d(MISSING)
+
+DEBUG "1231231" Test printf 2 %!d(MISSING)
+
+DEBUG "1231231" Test printf 3 %!d(MISSING)
+
+DEBUG "1231231" Test printf 4 %!d(MISSING)
+
+DEBUG "1231231" Test printf 5 %!d(MISSING)
+
+DEBUG "1231231" Test printf 6 %!d(MISSING)
+
+DEBUG "1231231" Test printf 7 %!d(MISSING)
+
+DEBUG "1231231" Test printf 8 %!d(MISSING)
+
+DEBUG "1231231" Test printf 9 %!d(MISSING)
+
+2020-12-25 15:36:07 +07:00 DEBUG Test printf "1231231" %!d(string=0)
+
+2020-12-25 15:36:08 +07:00 DEBUG Test printf "1231231" %!d(string=1)
+
+2020-12-25 15:36:09 +07:00 DEBUG Test printf "1231231" %!d(string=2)
+
+2020-12-25 15:36:10 +07:00 DEBUG Test printf "1231231" %!d(string=3)
+
+2020-12-25 15:36:11 +07:00 DEBUG Test printf "1231231" %!d(string=4)
+
+2020-12-25 15:36:12 +07:00 DEBUG Test printf "1231231" %!d(string=5)
+
+2020-12-25 15:36:13 +07:00 DEBUG Test printf "1231231" %!d(string=6)
+
+2020-12-25 15:36:14 +07:00 DEBUG Test printf "1231231" %!d(string=7)
+
+2020-12-25 15:36:15 +07:00 DEBUG Test printf "1231231" %!d(string=8)
+
+2020-12-25 15:36:16 +07:00 DEBUG Test printf "1231231" %!d(string=9)
+
+2020-12-25 15:37:22 +07:00 DEBUG Test printf "1231231" %!d(string=0)
+
+2020-12-25 15:37:23 +07:00 DEBUG Test printf "1231231" %!d(string=1)
+
+2020-12-25 15:37:24 +07:00 DEBUG Test printf "1231231" %!d(string=2)
+
+2020-12-25 15:37:25 +07:00 DEBUG Test printf "1231231" %!d(string=3)
+
+2020-12-25 15:37:26 +07:00 DEBUG Test printf "1231231" %!d(string=4)
+
+2020-12-25 15:37:27 +07:00 DEBUG Test printf "1231231" %!d(string=5)
+
+2020-12-25 15:37:28 +07:00 DEBUG Test printf "1231231" %!d(string=6)
+
+2020-12-25 15:37:29 +07:00 DEBUG Test printf "1231231" %!d(string=7)
+
+2020-12-25 15:37:30 +07:00 DEBUG Test printf "1231231" %!d(string=8)
+
+2020-12-25 15:37:31 +07:00 DEBUG Test printf "1231231" %!d(string=9)
+
+2020-12-25 15:38:36 +07:00 DEBUG Test printf "1231231" 0
+
+2020-12-25 15:38:37 +07:00 DEBUG Test printf "1231231" 1
+
+2020-12-25 15:38:38 +07:00 DEBUG Test printf "1231231" 2
+
+2020-12-25 15:38:39 +07:00 DEBUG Test printf "1231231" 3
+
+2020-12-25 15:38:40 +07:00 DEBUG Test printf "1231231" 4
+
+2020-12-25 15:38:41 +07:00 DEBUG Test printf "1231231" 5
+
+2020-12-25 15:38:42 +07:00 DEBUG Test printf "1231231" 6
+
+2020-12-25 15:38:43 +07:00 DEBUG Test printf "1231231" 7
+
+2020-12-25 15:38:44 +07:00 DEBUG Test printf "1231231" 8
+
+2020-12-25 15:38:45 +07:00 DEBUG Test printf "1231231" 9

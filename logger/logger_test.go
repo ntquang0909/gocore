@@ -25,6 +25,13 @@ func TestRotateLogger(t *testing.T) {
 			Channel:    "#legend-trucking-staging-bot",
 		},
 	})
+
+	for i := 0; i < 10; i++ {
+		logger.Printf("Test printf %s %d", "1231231", i)
+		time.Sleep(time.Second)
+	}
+
+	return
 	var data = []interface{}{
 		"asdf", "ss", "sss",
 	}

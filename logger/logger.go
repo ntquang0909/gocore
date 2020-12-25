@@ -230,7 +230,7 @@ func (l *Logger) Error(values ...interface{}) {
 	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeInterface, "", values...)
 }
 
-// Error error
+// ErrorWithEchoContext error
 func (l *Logger) ErrorWithEchoContext(c echo.Context, values ...interface{}) {
 	l.queue <- l.buildlog(Error, l.fileWithLineNum(), valueTypeInterface, "", values...).withEchoContext(c)
 }
@@ -308,16 +308,10 @@ func (l *Logger) run() {
 
 				switch data.valueType {
 				case valueTypeCustom:
-					var prettyValues = []interface{}{}
-					var values = []interface{}{}
-					for _, value := range data.values {
-						values = append(values, ToJSONString(value))
-						prettyValues = append(prettyValues, ToPrettyJSONString(value))
-					}
-					l.writer.Printf(fullFormatColor, prettyValues...)
+					l.writer.Printf(data.format, data.values...)
 					if l.ignoreWriteFile(data.logLevel) == false {
 
-						l.fileWriter.Printf(fullFormat, values...)
+						l.writer.Printf(data.format, data.values...)
 
 						if l.notifier != nil {
 							var titleFormat = format
@@ -325,7 +319,7 @@ func (l *Logger) run() {
 								titleFormat = data.formatRequestInfo() + "\n" + titleFormat
 							}
 
-							l.notifier.Send(fmt.Sprintf(titleFormat), fmt.Sprintf(extraFormat, prettyValues...))
+							l.notifier.Send(fmt.Sprintf(titleFormat, data.time), fmt.Sprintf(data.format, data.values...))
 						}
 					}
 
