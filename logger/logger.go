@@ -130,6 +130,11 @@ func New(config *Config) *Logger {
 	return logger
 }
 
+// Printf debug
+func (l *Logger) Printf(format string, values ...interface{}) {
+	l.queue <- l.buildlog(Debug, "", valueTypeCustom, format, values...)
+}
+
 // Debug debug
 func (l *Logger) Debug(values ...interface{}) {
 	l.queue <- l.buildlog(Debug, l.fileWithLineNum(), valueTypeInterface, "", values...)
@@ -302,6 +307,28 @@ func (l *Logger) run() {
 				}
 
 				switch data.valueType {
+				case valueTypeCustom:
+					var prettyValues = []interface{}{}
+					var values = []interface{}{}
+					for _, value := range data.values {
+						values = append(values, ToJSONString(value))
+						prettyValues = append(prettyValues, ToPrettyJSONString(value))
+					}
+					l.writer.Printf(fullFormatColor, prettyValues...)
+					if l.ignoreWriteFile(data.logLevel) == false {
+
+						l.fileWriter.Printf(fullFormat, values...)
+
+						if l.notifier != nil {
+							var titleFormat = format
+							if data.requestInfo != nil {
+								titleFormat = data.formatRequestInfo() + "\n" + titleFormat
+							}
+
+							l.notifier.Send(fmt.Sprintf(titleFormat), fmt.Sprintf(extraFormat, prettyValues...))
+						}
+					}
+
 				case valueTypeJSON:
 					var prettyValues = []interface{}{}
 					var values = []interface{}{}

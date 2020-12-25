@@ -15,6 +15,7 @@ type valueType string
 var (
 	valueTypeInterface valueType = "interface"
 	valueTypeJSON      valueType = "json"
+	valueTypeCustom    valueType = "custom"
 )
 
 type requestInfo struct {
