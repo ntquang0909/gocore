@@ -148,14 +148,14 @@ func testS3() {
 		}
 
 		var files = form.File["files"]
-		var fileUploads = s3.UploadMultipleFileParams{
+		var fileUploads = s3.UploadMultipleFileHeaderParams{
 			ACL:            "public-read",
 			UploadToBucket: os.Getenv("AWS_S3_ORIGIN_BUCKET"),
-			UploadFiles:    []s3.UploadFileParams{},
+			UploadFiles:    []s3.UploadFileHeaderParams{},
 		}
 		for _, file := range files {
 			fmt.Println("file", file.Filename)
-			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileParams{
+			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileHeaderParams{
 				FileHeader: file,
 				Prefix:     "test",
 			})
@@ -179,11 +179,11 @@ func testS3() {
 		}
 
 		var files = form.File["files"]
-		var fileUploads = s3.UploadMultipleFileWithThumbnailParams{
+		var fileUploads = s3.UploadMultipleFileHeaderWithThumbnailParams{
 			ACL:                     "public-read",
 			UploadToBucket:          os.Getenv("AWS_S3_ORIGIN_BUCKET"),
 			UploadToThumbnailBucket: os.Getenv("AWS_S3_RESIZE_BUCKET"),
-			UploadFiles:             []s3.UploadFileWithThumbnailParams{},
+			UploadFiles:             []s3.UploadFileHeaderWithThumbnailParams{},
 		}
 
 		for _, file := range files {
@@ -191,7 +191,7 @@ func testS3() {
 			if err != nil {
 				continue
 			}
-			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileWithThumbnailParams{
+			fileUploads.UploadFiles = append(fileUploads.UploadFiles, s3.UploadFileHeaderWithThumbnailParams{
 				File:   f,
 				Prefix: "test",
 				ThumbnailSize: &s3.ThumbnailSize{
