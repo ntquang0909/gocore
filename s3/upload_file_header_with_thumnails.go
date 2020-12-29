@@ -25,8 +25,8 @@ type ThumbnailSize struct {
 	Prefix string
 }
 
-// UploadFileWithThumbnailParams single file params
-type UploadFileWithThumbnailParams struct {
+// UploadFileHeaderWithThumbnailParams single file params
+type UploadFileHeaderWithThumbnailParams struct {
 	File               io.Reader
 	Name               string
 	Prefix             string
@@ -34,9 +34,9 @@ type UploadFileWithThumbnailParams struct {
 	ThumbnailSize      *ThumbnailSize
 }
 
-// UploadMultipleFileWithThumbnailParams params
-type UploadMultipleFileWithThumbnailParams struct {
-	UploadFiles             []UploadFileWithThumbnailParams
+// UploadMultipleFileHeaderWithThumbnailParams params
+type UploadMultipleFileHeaderWithThumbnailParams struct {
+	UploadFiles             []UploadFileHeaderWithThumbnailParams
 	UploadToBucket          string
 	UploadToThumbnailBucket string
 	ACL                     string
@@ -65,7 +65,7 @@ func (size *ThumbnailSize) CalcResponsiveSize(width, height int) {
 }
 
 // UploadMultipleFileWithThumbnail upload multiple files
-func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params UploadMultipleFileWithThumbnailParams) ([]*UploadFileWithThumbnailResponse, error) {
+func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params UploadMultipleFileHeaderWithThumbnailParams) ([]*UploadFileWithThumbnailResponse, error) {
 	var response = []*UploadFileWithThumbnailResponse{}
 
 	session, err := s3.NewSession()
@@ -79,7 +79,7 @@ func (s3 *S3) UploadMultipleFileWithThumbnail(ctx context.Context, params Upload
 	var channel = make(chan *UploadFileWithThumbnailResponse, max)
 	wg.Add(max)
 	for _, p := range params.UploadFiles {
-		go func(channel chan *UploadFileWithThumbnailResponse, param UploadFileWithThumbnailParams, wg *sync.WaitGroup) {
+		go func(channel chan *UploadFileWithThumbnailResponse, param UploadFileHeaderWithThumbnailParams, wg *sync.WaitGroup) {
 			defer func() {
 				wg.Done()
 				max--
