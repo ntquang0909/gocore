@@ -156,7 +156,6 @@ func (client *Client) GetWithContext(ctx context.Context, key string, value inte
 	val, err := client.rdb.Get(ctx, k).Result()
 
 	if err != nil {
-		client.logger.Printf("Get value with key = %s error: %v\n", key, err)
 		if err == redis.Nil {
 			return ErrKeyNotFound
 		}
