@@ -32,17 +32,7 @@ func TestRotateLogger(t *testing.T) {
 	}
 
 	return
-	var data = []interface{}{
-		"asdf", "ss", "sss",
-	}
 
-	logger.Debugf("%s\n[info] "+"asdf", append([]interface{}{"aaaaa"}, data...)...)
-	for i := 0; i < 10; i++ {
-		logger.Debugf("count %d \n", i)
-		logger.Debug("count sssss", i, "asdfasdf")
-		logger.DebugJSON("count sssss", i, "asdfasdf")
-		time.Sleep(time.Second)
-	}
 }
 
 func TestLumperjackLogger(t *testing.T) {
