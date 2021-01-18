@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	goredis "github.com/go-redis/redis/v8"
 	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/thaitanloi365/gocore/cache/memory"
@@ -14,9 +15,11 @@ import (
 
 func TestRedisCache(t *testing.T) {
 	var redisCache Cache = redis.New(&redis.Config{
-		Namespace:    "redis_test",
-		RedisAddress: "localhost:6379",
-		RedisDBMode:  0,
+		Namespace: "redis_test",
+		Options: &goredis.Options{
+			Addr: "localhost:6379",
+			DB:   0,
+		},
 	})
 
 	type Author struct {

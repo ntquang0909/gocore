@@ -25,9 +25,7 @@ var instance *Client
 
 // Config config
 type Config struct {
-	RedisAddress      string
-	RedisDBMode       int
-	RedisPassword     string
+	*redis.Options
 	Namespace         string
 	Logger            types.Logger
 	DefaultExpiration time.Duration
@@ -43,12 +41,7 @@ type Client struct {
 
 // New get the redis client
 func New(config *Config) *Client {
-	var rdb = redis.NewClient(&redis.Options{
-		Addr:       config.RedisAddress,
-		DB:         config.RedisDBMode,
-		Password:   config.RedisPassword,
-		MaxRetries: 3,
-	})
+	var rdb = redis.NewClient(config.Options)
 
 	var instance = &Client{
 		config:    config,
