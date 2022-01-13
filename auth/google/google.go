@@ -3,7 +3,7 @@ package google
 import (
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/thaitanloi365/gocore/auth"
 )
 
